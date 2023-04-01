@@ -1,5 +1,9 @@
 import os
 import openai
+import dotenv
+
+# TODO Do batched requests to OpenAI API (?)
+
 
 def translate_code(source_language, target_language, code):
     prompt = f"Translate the following {source_language} code to {target_language}:\n\n{source_language} code:\n{code}\n\n{target_language} code:"
@@ -156,7 +160,33 @@ def remove_extraneous_text(file_path, target_language):
         f.write(cleaned_code)
 
 
+# TODO Improve implementation
+if __name__ == "__main__":
+    load_dotenv()
 
+    source_dir = "source"
+    output_dir = "output"
+    source_language = "Python"
+    target_language = "JavaScript"
+    browser_compatible = True
+
+    process_directory(source_dir, output_dir, source_language, target_language, browser_compatible)
+
+    for root, _, files in os.walk(output_dir):
+        for file in files:
+            if file.endswith(".js"):
+                file_path = os.path.join(root, file)
+
+                try:
+                    execute_code(file_path)
+                except Exception as e:
+                    error_output = str(e)
+                    fix_errors(file_path, error_output, target_language)
+
+                refactor_code(file_path, target_language)
+                remove_extraneous_text(file_path, target_language)
+
+    print("Done!")
 
 
 

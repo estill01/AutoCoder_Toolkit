@@ -1,5 +1,5 @@
 # Code Translation Toolkit 🪄
-This toolkit helps you translate code between different programming languages, find alternative imports for packages, and perform various code processing tasks such as error fixing, refactoring, and removing extraneous text.
+This toolkit helps you translate code between different programming languages, find alternative imports for packages, and perform various code processing tasks such as error fixing, and refactoring.
 
 ## Requirements
 - Python 3.6+

@@ -3,7 +3,7 @@ import openai
 import dotenv
 from typing import List
 import tiktoken
-from code_translator.utils import (
+from auto_code_toolkit.utils import (
     num_tokens_from_messages, 
     build_prompt, 
     select_model,
@@ -13,6 +13,7 @@ from code_translator.utils import (
 
 
 # TODO Add RAIL output formatters
+# TODO Add security vulnerability assessment
 # TODO Add streaming return variant
 
 
@@ -157,6 +158,7 @@ def fix_errors(file_path, error_output, target_language):
 
 def execute_code(file_path):
     # This function should be implemented based on the specific target language and execution environment
+    # TODO make sure to collect any error output and feed that into `fix_errors`, `refactor_code`, and `update_code`
     pass
 
 
@@ -178,6 +180,7 @@ def refactor_code(file_path, target_language):
     with open(file_path, "w") as f:
         f.write(refactored_code)
 
+# TODO This should be in a prompt post-processor ; extract to a prompt/ or utils/ dir
 def remove_extraneous_text(file_path, target_language):
     with open(file_path, "r") as f:
         code = f.read()

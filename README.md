@@ -1,5 +1,6 @@
-# Code Translation Toolkit 🪄
-This toolkit helps you translate code between different programming languages, find alternative imports for packages, and perform various code processing tasks such as error fixing, and basic refactoring.
+# AutoCode Toolkit 🪄
+
+The AutoCode Toolkit helps you find and fix errors, perform code-quality refactoring, translate code between different programming languages (and find substitute packages and imports).
 
 ## Installation
 Clone the repo then install the dependencies via `poetry`:
@@ -9,10 +10,19 @@ poetry install
 
 ## Usage
 ### Importing the Toolkit
-To use the translator, simply import the necessary functions from the module:
+Import the necessary functions from the module and get to toolkitting!:
 
 ```python
-from code_translator import translate_code, find_imports, is_external_import, find_alternative_imports
+from auto_code_toolkit import (
+  refactor_code,
+  update_code, 
+  fix_errors, 
+  translate_code, 
+  find_imports, 
+  is_external_import, 
+  find_alternative_imports,
+  process_directory,
+ )
 ```
 
 ### Translating Code

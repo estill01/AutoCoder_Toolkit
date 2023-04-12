@@ -3,7 +3,8 @@ import openai
 import dotenv
 from typing import List
 import tiktoken
-from auto_code_toolkit.utils import (
+# TODO Import your `ChatCompletions_Utils` package instead
+from auto_coder_toolkit.utils import (
     num_tokens_from_messages, 
     build_prompt, 
     select_model,

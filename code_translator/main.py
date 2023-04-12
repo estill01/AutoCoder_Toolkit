@@ -65,12 +65,12 @@ def find_imports(file_path, source_language):
 
 
 
-## REFACTOR -- PICK BACK UP HERE  ##
+## REFACTOR -- PICK BACK UP HERE: CONVERTING TO `ChatCompletions` ##
 
 def is_external_import(import_statement, source_language):
     prompt = f"Is the following {source_language} import statement an external package or a reference to another file in the project?\n\n{import_statement}\n\nAnswer:"
 
-    response = openai.ChatCompletion.create(
+    response = openai.Completion.create(
         model="gpt-4",
         prompt=prompt,
         max_tokens=50,
@@ -88,7 +88,7 @@ def find_alternative_imports(source_imports, source_language, target_language, b
             prompt += " The {target_language} package should be compatible with running in a browser environment."
         prompt += f"\n\n{source_language} import statement:\n" + source_import
 
-        response = openai.ChatCompletion.create(
+        response = openai.Completion.create(
             model="gpt-4",
             prompt=prompt,
             max_tokens=1024,
@@ -135,7 +135,7 @@ def process_directory(source_dir, output_dir, source_language, target_language, 
 def update_code(code, error_message, target_language):
     prompt = f"Update the following {target_language} code to fix the error described:\n\nError message:\n{error_message}\n\n{target_language} code:\n{code}\n\nUpdated {target_language} code:"
 
-    response = openai.ChatCompletion.create(
+    response = openai.Completion.create(
         model="gpt-4",
         prompt=prompt,
         max_tokens=1024,
@@ -166,7 +166,7 @@ def refactor_code(file_path, target_language):
 
     prompt = f"Refactor the following {target_language} code to ensure a high level of encapsulation and abstraction, as if implemented by an expert software engineer:\n\n{target_language} code:\n{code}\n\nRefactored {target_language} code:"
 
-    response = openai.ChatCompletion.create(
+    response = openai.Completion.create(
         model="gpt-4",
         prompt=prompt,
         max_tokens=1024,
@@ -184,7 +184,7 @@ def remove_extraneous_text(file_path, target_language):
 
     prompt = f"Remove any extraneous text from the following {target_language} code, leaving only code and relevant comments:\n\n{target_language} code:\n{code}\n\nCleaned {target_language} code:"
 
-    response = openai.ChatCompletion.create(
+    response = openai.Completion.create(
         model="gpt-4",
         prompt=prompt,
         max_tokens=1024,

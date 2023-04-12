@@ -1,24 +1,18 @@
 # Code Translation Toolkit 🪄
-This toolkit helps you translate code between different programming languages, find alternative imports for packages, and perform various code processing tasks such as error fixing, and refactoring.
-
-## Requirements
-- Python 3.6+
-- `openai` library
+This toolkit helps you translate code between different programming languages, find alternative imports for packages, and perform various code processing tasks such as error fixing, and basic refactoring.
 
 ## Installation
-1. Install the `openai` library using pip:
+Clone the repo then install the dependencies via `poetry`:
 ```bash
-pip install openai
+poetry install
 ```
-
-2. Clone or download the repository to your local machine.
 
 ## Usage
 ### Importing the Toolkit
-To use the toolkit, simply import the necessary functions from the `code_translation_toolkit.py` file:
+To use the translator, simply import the necessary functions from the module:
 
 ```python
-from code_translation_toolkit import translate_code, find_imports, is_external_import, find_alternative_imports
+from code_translator import translate_code, find_imports, is_external_import, find_alternative_imports
 ```
 
 ### Translating Code
@@ -61,24 +55,6 @@ alternative_imports = find_alternative_imports(source_imports, source_language, 
 - `source_language`: The source programming language (e.g., "Python")
 - `target_language`: The target programming language (e.g., "JavaScript")
 - `browser_compatible` (optional): Set to `True` to find browser-compatible alternatives for JavaScript or TypeScript. Default is `False`.
-
-### Optional: Batch API Calls
-To optimize API calls and minimize the number of requests, you can use the optional prompt batching feature. Import the necessary functions from the `code_translation_toolkit.py` file:
-
-```python
-from code_translation_toolkit import create_batched_prompt, batch_api_call, extract_responses
-```
-
-Create a list of tasks, then use the `create_batched_prompt`, `batch_api_call`, and `extract_responses` functions to batch the API calls:
-
-```python
-tasks = [...]  # List of tasks
-prompt = create_batched_prompt(tasks)
-response_text = batch_api_call(prompt)
-responses = extract_responses(response_text)
-```
-
-Refer to the refactored code in the previous response for examples of how to use the batching feature with the available functions.
 
 ## Contributing
 Contributions are welcome! If you have suggestions for improvements or bug fixes, please open an issue or submit a pull request.

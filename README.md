@@ -1,6 +1,6 @@
 # AutoCoder Toolkit 🪄
 
-The AutoCoder Toolkit helps you find and fix errors, perform code-quality refactoring, translate code between different programming languages (and find substitute packages and imports).
+The AutoCoder Toolkit helps you find and fix errors, perform code-quality refactoring, and translate code between different programming languages (while finding substitute packages and imports as it goes).
 
 ## Installation
 Clone the repo then install the dependencies via `poetry`:

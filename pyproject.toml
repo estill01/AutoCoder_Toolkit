@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "code-translator"
+name = "code_translator"
 version = "0.1.0"
 description = ""
 authors = ["estill01 <ehs.stillman@gmail.com>"]
@@ -10,6 +10,7 @@ packages = [{include = "code_translator"}]
 python = "^3.9"
 openai = "^0.27.2"
 python-dotenv = "^1.0.0"
+tiktoken = "^0.3.3"
 
 
 [build-system]

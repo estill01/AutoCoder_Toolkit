@@ -7,100 +7,65 @@ from code_translator.utils import (
     num_tokens_from_messages, 
     build_prompt, 
     select_model,
+    llm,
     MODELS
 )
-
-
-
-# ChatCompletions formatting
-"""
-[
-  {"role": "system", "content": "You are a helpful assistant that translates English to French."},
-  {"role": "user", "content": 'Translate the following English text to French: "{text}"'}
-]
-"""
-"""
-[
-  {"role": "user", "content": 'Translate the following English text to French: "{text}"'}
-]
-"""
-
-# "Typically, a conversation is formatted with a system message first, followed by alternating user and assistant messages."
-
-"""
-openai.ChatCompletion.create(
-  model="gpt-3.5-turbo",
-  messages=[
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "Who won the world series in 2020?"},
-        {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
-        {"role": "user", "content": "Where was it played?"
-    ]
-)
-"""
-
-# Response Format
-"""
-{
- 'id': 'chatcmpl-6p9XYPYSTTRi0xEviKjjilqrWU2Ve',
- 'object': 'chat.completion',
- 'created': 1677649420,
- 'model': 'gpt-3.5-turbo',
- 'usage': {'prompt_tokens': 56, 'completion_tokens': 31, 'total_tokens': 87},
- 'choices': [
-   {
-    'message': {
-      'role': 'assistant',
-      'content': 'The 2020 World Series was played in Arlington, Texas at the Globe Life Field, which was the new home stadium for the Texas Rangers.'},
-    'finish_reason': 'stop',
-    'index': 0
-   }
-  ]
-}
-"""
-
-# response['choices'][0]['message']['content'].
-
-"""
-param `user`
-The IDs should be a string that uniquely identifies each user. We recommend hashing their username or email address, in order to avoid sending us any identifying information. If you offer a preview of your product to non-logged in users, you can send a session ID instead.
-"""
-
 
 
 # TODO Add RAIL output formatters
 # TODO Add streaming return variant
 
-def translate_code(source_language, target_language, code, temp: int = 0):
-    messages = _make_prompt(
-        system=f"Translate the following {source_language} code to {target_language} code. Only output code. Do NOT include introductory text or explain the code you have generated after producing it.",
-        user=code
-    )
-    # TODO Dynamically switch between GPT-4 and GPT-4-32k based on content length...
-    response = openai.ChatCompletion.create(
-        model=MODELS["gpt-4"].model
-        messages=messages,
-        temperature=temp,
-        max_tokens=MODELS['gpt-4'].max_tokens
-    )
 
-    return response.choices[0].text.strip()
+"""
+Functions:
+
+- `translate_code`
+
+- `find_imports`
+
+- `is_external_import`
+
+- `find_alternative_imports`
+
+- `process_directory`
+
+- `update_code`
+
+- `fix_errors`
+
+- `execute_code`
+
+- `refactor_code`
+
+- `remove_extraneous_text`
+
+"""
+
+
+
+def translate_code(source_language, target_language, code, temp: int = 0):
+    return llm(
+        _code_prompt(f"Translate the following {source_language} code to {target_language} code."),
+        code
+    )
 
 def find_imports(file_path, source_language):
     with open(file_path, "r") as f:
-        content = f.read()
+        code = f.read()
 
-    prompt = f"Extract a list of import statements from the following {source_language} code:\n\n{content}"
-    
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        prompt=prompt,
-        max_tokens=1024,
-        temperature=0.7,
+    content = llm(
+        _code_prompt(f"Extract all import statements from the following {source_language} code. put each extracted import statement on a newline. Include the whole import statement including language syntax, imported files, classes, functions, and other code artifacts."),
+        code
     )
+    # TODO Use an output formatter to get a list of imports
+    
+    imports = content.split('\n')
 
-    imports = response.choices[0].text.strip().split('\n')
     return [import_statement for import_statement in imports if import_statement.strip()]
+
+
+
+## REFACTOR -- PICK BACK UP HERE  ##
 
 def is_external_import(import_statement, source_language):
     prompt = f"Is the following {source_language} import statement an external package or a reference to another file in the project?\n\n{import_statement}\n\nAnswer:"
@@ -179,6 +144,7 @@ def update_code(code, error_message, target_language):
 
     return response.choices[0].text.strip()
 
+
 def fix_errors(file_path, error_output, target_language):
     with open(file_path, "r") as f:
         code = f.read()
@@ -188,9 +154,11 @@ def fix_errors(file_path, error_output, target_language):
     with open(file_path, "w") as f:
         f.write(fixed_code)
 
+
 def execute_code(file_path):
     # This function should be implemented based on the specific target language and execution environment
     pass
+
 
 def refactor_code(file_path, target_language):
     with open(file_path, "r") as f:
@@ -227,6 +195,8 @@ def remove_extraneous_text(file_path, target_language):
 
     with open(file_path, "w") as f:
         f.write(cleaned_code)
+
+
 
 
 # TODO Improve implementation

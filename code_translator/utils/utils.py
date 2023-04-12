@@ -1,20 +1,38 @@
+import os
+import openai
 import tiktoken
+from typing import List
 
-MODELS = {
-    'models': ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-32k']
-    'gpt-3.5-turbo': {
-        model: 'gpt-3.5-turbo',
-        max_tokens: 4096,
-    },
-    'gpt-4': { 
-        model: 'gpt-4',
-        max_tokens: 8192,
-    },
-    'gpt-4-32k': {
-        model: 'gpt-4-32k',
-        max_tokens: 32768,
-    }
-}
+
+def llm(system_instruction: str = None, user_input: str = None, temp: int = 0, messages: List[Dict[str, str]] = []) -> str:
+    messages = build_prompt(
+        system=system_instruction
+        user=user_input,
+        messages=messages
+    )
+    model = select_model(messages)
+    response = openai.ChatCompletion.create(
+        model=model
+        messages=messages,
+        temperature=temp,
+        max_tokens=MODELS[model].max_tokens
+    )
+    return response.choices[0].message.content
+
+
+# ----------------------------------------------------
+# PROMPT PARTIALS
+# ----------------------------------------------------
+
+def _code_prompt(prompt: str = None) -> str:
+    # TODO Check if received `prompt` ends with a '.' and accomodate
+    base_prompt = f"Generate code. Only output code. Do NOT include introductory text or explain the code you have generated after producing it. If you are unable to perform the code translation respond 'ERROR'"
+    return f"{prompt} {base_prompt}"
+
+
+# ----------------------------------------------------
+# PROMPT CONSTRUCTION
+# ----------------------------------------------------
 
 # SOURCE: https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
 def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
@@ -48,27 +66,6 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0301"):
     num_tokens += 3  # every reply is primed with <|start|>assistant<|message|>
     return num_tokens
 
-
-def _build_user_prompt(content: str) -> Dict[str, str]:
-    return {'role': 'user', 'content': conent }
-
-def _build_system_prompt(content: str) -> Dict[str, str]:
-    return {'role': 'system', 'content': content }
-
-def buid_prompt(
-    *, 
-    system_content: str = None, 
-    user_content: str = None, 
-    messages: List[Dict[str, str]] = [], 
-    ) -> List[Dict[str, str]]:
-
-    if system_content is not None and user_content is not None:
-        return messages.extend([_make_system_prompt(system_content), _make_user_prompt(user_content)])
-    if system_content is None and user_content is not None:
-        return messages.extend([_make_user_prompt(user_content)])
-    else
-        raise ValueError("Must provide `user_content`")
-
 def select_model(messages: List[Dict[str, str]], model_family: str = 'gpt-4', force: bool = False) -> str:
     msg_count = len(messages)
     token_count = num_tokens_from_messages(messages, model_family)
@@ -86,8 +83,44 @@ def select_model(messages: List[Dict[str, str]], model_family: str = 'gpt-4', fo
         return MODELS['gpt-4-32k'].model
     else:
         raise ValueError(f"{MODELS['gpt-4-32k'].model}: Token count ({count}) greater than max allowed tokens ({MODELS['gpt-4-32k'].max_tokens}).")
-        
 
-        
+def _build_user_prompt(content: str) -> Dict[str, str]:
+    return {'role': 'user', 'content': conent }
+
+def _build_system_prompt(content: str) -> Dict[str, str]:
+    return {'role': 'system', 'content': content }
+
+def build_prompt(
+    *, 
+    system_content: str = None, 
+    user_content: str = None, 
+    messages: List[Dict[str, str]] = [], 
+    ) -> List[Dict[str, str]]:
+
+    if system_content is not None and user_content is not None:
+        return messages.extend([_make_system_prompt(system_content), _make_user_prompt(user_content)])
+    if system_content is None and user_content is not None:
+        return messages.extend([_make_user_prompt(user_content)])
+    else
+        raise ValueError("Must provide `user_content`")
 
 
+# ----------------------------------------------------
+# CONSTANTS
+# ----------------------------------------------------
+
+MODELS = {
+    'models': ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-32k']
+    'gpt-3.5-turbo': {
+        model: 'gpt-3.5-turbo',
+        max_tokens: 4096,
+    },
+    'gpt-4': { 
+        model: 'gpt-4',
+        max_tokens: 8192,
+    },
+    'gpt-4-32k': {
+        model: 'gpt-4-32k',
+        max_tokens: 32768,
+    }
+}

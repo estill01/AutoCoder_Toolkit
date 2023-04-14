@@ -1,16 +1,15 @@
-import os
 import openai
 import dotenv
 from typing import List
-import tiktoken
-# TODO Import your `ChatCompletions_Utils` package instead
-from auto_coder_toolkit.utils import (
+from autocoder_toolkit.utils import (
     num_tokens_from_messages, 
     build_prompt, 
     select_model,
     llm,
     MODELS
 )
+from autocoder_toolkit.prompts import _code_prompt
+
 
 
 # TODO Add RAIL output formatters
@@ -54,15 +53,14 @@ def translate_code(source_language, target_language, code, temp: int = 0):
 def find_imports(file_path, source_language):
     with open(file_path, "r") as f:
         code = f.read()
-
     content = llm(
-        _code_prompt(f"Extract all import statements from the following {source_language} code. put each extracted import statement on a newline. Include the whole import statement including language syntax, imported files, classes, functions, and other code artifacts."),
+        _code_prompt(
+            f"Extract all import statements from the following {source_language} code. put each extracted import statement on a newline. Include the whole import statement including language syntax, imported files, classes, functions, and other code artifacts."
+        ),
         code
     )
     # TODO Use an output formatter to get a list of imports
-    
     imports = content.split('\n')
-
     return [import_statement for import_statement in imports if import_statement.strip()]
 
 

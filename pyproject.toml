@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "auto_coder_toolkit"
+name = "autocoder_toolkit"
 version = "0.1.0"
 description = ""
 authors = ["estill01 <ehs.stillman@gmail.com>"]
 readme = "README.md"
-packages = [{include = "auto_coder_toolkit"}]
+packages = [{include = "autocoder_toolkit"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"

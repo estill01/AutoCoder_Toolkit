@@ -1,15 +1,7 @@
 import openai
 import dotenv
 from typing import List
-from autocoder_toolkit.utils import (
-    num_tokens_from_messages, 
-    build_prompt, 
-    select_model,
-    llm,
-    MODELS
-)
-from autocoder_toolkit.prompts import _code_prompt
-
+from autocoder_toolkit.utils import generate_task
 
 
 # TODO Add RAIL output formatters
@@ -17,39 +9,68 @@ from autocoder_toolkit.prompts import _code_prompt
 # TODO Add streaming return variant
 
 
-"""
-Functions:
 
-- `translate_code`
+def refactor_code(code: str, reason: str, temp: int = 0) -> str:
+    return generate_task(
+        task="code refactoring",
+        action="Refactor the following code:",
+        user_input=code,
+        extra_info=f"to {reason}.",
+        temp=temp
+    )
 
-- `find_imports`
+def review_code(code: str, temp: int = 0) -> str:
+    return generate_task(
+        task="code review",
+        action="Review the following code and provide feedback and suggestions for improvement:",
+        user_input=code,
+        temp=temp
+    )
 
-- `is_external_import`
+def generate_unit_tests(code: str, language: str, temp: int = 0) -> str:
+    return generate_task(
+        task="unit test generation",
+        action="Generate unit tests for the following code:",
+        user_input=code,
+        extra_info=f"in {language}.",
+        temp=temp
+    )
 
-- `find_alternative_imports`
+def identify_bugs(code: str, temp: int = 0) -> str:
+    return generate_task(
+        task="bug detection",
+        action="Identify any bugs in the following code and suggest potential fixes:",
+        user_input=code,
+        temp=temp
+    )
 
-- `process_directory`
-
-- `update_code`
-
-- `fix_errors`
-
-- `execute_code`
-
-- `refactor_code`
-
-- `remove_extraneous_text`
-
-"""
+def implement_feature(feature_description: str, language: str, temp: int = 0) -> str:
+    return generate_task(
+        task="feature implementation",
+        action="Implement the feature described in the user input:",
+        user_input=feature_description,
+        extra_info=f"in {language} code.",
+        temp=temp
+    )
 
 
 
+# ------------------------
+
+# -> Translate code from lang x to  lang y
 def translate_code(source_language, target_language, code, temp: int = 0):
     return llm(
         _code_prompt(f"Translate the following {source_language} code to {target_language} code."),
         code
     )
 
+# -> Check that syntax is correct
+def check_syntax
+    pass
+
+
+
+# -> Extract import statements from file 
 def find_imports(file_path, source_language):
     with open(file_path, "r") as f:
         code = f.read()

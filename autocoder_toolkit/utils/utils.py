@@ -4,6 +4,17 @@ import tiktoken
 from typing import List
 
 
+def generate_task(
+    task: str, 
+    action: str, 
+    user_input: str = None, 
+    extra_info: str = "", 
+    temp: int = 0, 
+    messages: List[Dict[str, str]] = []
+) -> str:
+    prompt = _generate_prompt(task, action, extra_info)
+    return llm(prompt, user_input, temp, messages)
+
 def llm(system_instruction: str = None, user_input: str = None, temp: int = 0, messages: List[Dict[str, str]] = []) -> str:
     messages = build_prompt(
         system=system_instruction
@@ -19,15 +30,14 @@ def llm(system_instruction: str = None, user_input: str = None, temp: int = 0, m
     )
     return response.choices[0].message.content
 
-
 # ----------------------------------------------------
-# PROMPT PARTIALS
+# PROMPT PARTIAL
 # ----------------------------------------------------
 
-def _code_prompt(prompt: str = None) -> str:
-    # TODO Check if received `prompt` ends with a '.' and accomodate
-    base_prompt = f"Generate code. Only output code. Do NOT include introductory text or explain the code you have generated after producing it. If you are unable to perform the code translation respond 'ERROR'"
-    return f"{prompt} {base_prompt}"
+def _generate_system_prompt(task: str, action: str, extra_info: str = "") -> str:
+    return f"""
+    You are an expert {task} AI system. {action} {extra_info} If you are unable to perform this task respond 'ERROR'"
+    """
 
 
 # ----------------------------------------------------

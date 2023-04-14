@@ -1,8 +1,19 @@
 import os
 import openai
 import tiktoken
-from typing import List
+from typing import List, Callable
+from autocoder_toolking.utils.constants import MODELS
+from autocoder_toolking.utils.error_handling import _handle_retries
 
+# TODO Switch to dotenv 
+openai.api_key = os.environ["OPENAI_API_KEY"]
+
+
+# TODO Integrate logging
+
+# ----------------------------------------------------
+# PRIMARY INTERFACE
+# ----------------------------------------------------
 
 def generate_task(
     task: str, 
@@ -12,8 +23,8 @@ def generate_task(
     temp: int = 0, 
     messages: List[Dict[str, str]] = []
 ) -> str:
-    prompt = _generate_prompt(task, action, extra_info)
-    return llm(prompt, user_input, temp, messages)
+    prompt = _generate_system_prompt(task, action, extra_info)
+    return _handle_retries(llm(prompt, user_input, temp, messages))
 
 def llm(system_instruction: str = None, user_input: str = None, temp: int = 0, messages: List[Dict[str, str]] = []) -> str:
     messages = build_prompt(
@@ -29,6 +40,7 @@ def llm(system_instruction: str = None, user_input: str = None, temp: int = 0, m
         max_tokens=MODELS[model].max_tokens
     )
     return response.choices[0].message.content
+
 
 # ----------------------------------------------------
 # PROMPT PARTIAL
@@ -114,23 +126,3 @@ def build_prompt(
     else
         raise ValueError("Must provide `user_content`")
 
-
-# ----------------------------------------------------
-# CONSTANTS
-# ----------------------------------------------------
-
-MODELS = {
-    'models': ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-32k']
-    'gpt-3.5-turbo': {
-        model: 'gpt-3.5-turbo',
-        max_tokens: 4096,
-    },
-    'gpt-4': { 
-        model: 'gpt-4',
-        max_tokens: 8192,
-    },
-    'gpt-4-32k': {
-        model: 'gpt-4-32k',
-        max_tokens: 32768,
-    }
-}
